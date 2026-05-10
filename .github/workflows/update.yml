@@ -1,31 +1,31 @@
 name: Update SoundCloud Playlist
-
 on:
   schedule:
-    - cron: '0 */3 * * *'
+    - cron: '0 */3 * * *' # every 3 hours
   workflow_dispatch:
 
 jobs:
-  update:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # ഇത് ആണ് main fix
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
       - name: Install yt-dlp
-        run: pip install -U yt-dlp
+        run: pip install yt-dlp
 
-      - name: Fetch new URLs
-        run: yt-dlp -g --flat-playlist https://on.soundcloud.com/AdZ3SymJAKIzAhwkBs > playlist.m3u
+      - name: Download playlist and extract stream URLs
+        run: |
+          yt-dlp -g "https://soundcloud.com/playlists/2082249473" > playlist.m3u
 
-      - name: Commit updated playlist
-        uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: Auto update playlist URLs
-          file_pattern: playlist.m3u
+      - name: Commit and push
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add playlist.m3u
+          git commit -m "Update SoundCloud URLs" || echo "No changes"
+          git push
