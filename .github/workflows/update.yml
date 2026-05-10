@@ -8,14 +8,15 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # ഇത് ആണ് main fix
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
       - name: Install yt-dlp
         run: pip install -U yt-dlp
@@ -24,7 +25,7 @@ jobs:
         run: yt-dlp -g --flat-playlist https://on.soundcloud.com/AdZ3SymJAKIzAhwkBs > playlist.m3u
 
       - name: Commit updated playlist
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Auto update playlist URLs
           file_pattern: playlist.m3u
