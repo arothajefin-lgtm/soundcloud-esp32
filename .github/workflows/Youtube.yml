@@ -1,7 +1,7 @@
 name: Update YouTube Song
 on:
   schedule:
-    - cron: '0 */3 * * *' # 3 മണിക്കൂർ കൂടുമ്പോൾ URL update
+    - cron: '0 */3 * * *'
   workflow_dispatch:
 
 env:
@@ -22,13 +22,13 @@ jobs:
       - name: Get YouTube audio URL
         run: |
           yt-dlp -f 91/bestaudio -g "https://youtu.be/3TaRdD3BE5I" > playlist.m3u
-          echo "Got URL:"
-          head -1 playlist.m3u
+          echo "URL count: $(wc -l < playlist.m3u)"
+          cat playlist.m3u
 
       - name: Commit playlist.m3u
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add playlist.m3u
-          git commit -m "Update song URL" || exit 0
+          git commit -m "Update YouTube URL" || exit 0
           git push
