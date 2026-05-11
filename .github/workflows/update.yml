@@ -22,17 +22,11 @@ jobs:
 
       - name: Download playlist and extract stream URLs
         run: |
-          set +e
-          yt-dlp --ignore-errors --no-warnings -g "https://soundcloud.com/playlists/2082249473" > playlist.m3u
-          if [! -s playlist.m3u ]; then
-            echo "Error: No valid tracks found"
-            exit 1
-          fi
-          echo "Generated $(wc -l < playlist.m3u) valid URLs"
+          yt-dlp --ignore-errors --no-warnings -g "https://on.soundcloud.com/Y5VrCTxkMBHezJYLkE" > playlist.m3u
+          echo "Total URLs: $(wc -l < playlist.m3u)"
           cat playlist.m3u
 
       - name: Commit and push
-        if: success()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
