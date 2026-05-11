@@ -1,5 +1,7 @@
-name: Update SoundCloud Playlist
+name: Update YouTube Song
 on:
+  schedule:
+    - cron: '0 */3 * * *' # 3 മണിക്കൂർ കൂടുമ്പോൾ URL update
   workflow_dispatch:
 
 env:
@@ -17,23 +19,16 @@ jobs:
       - name: Install yt-dlp
         run: pip install -U yt-dlp
 
-      - name: Debug - Test playlist
+      - name: Get YouTube audio URL
         run: |
-          echo "yt-dlp version:"
-          yt-dlp --version
-          echo "=== Testing playlist access ==="
-          yt-dlp --verbose --dump-single-json "https://soundcloud.com/kesterofficial/sets/20-best-christian-devotional"
-          echo "=== Trying to get stream URLs ==="
-          yt-dlp -v -g "https://soundcloud.com/kesterofficial/sets/20-best-christian-devotional" > playlist.m3u
-          echo "=== Result ==="
-          echo "Total URLs: $(wc -l < playlist.m3u)"
-          cat playlist.m3u
+          yt-dlp -f 91/bestaudio -g "https://youtu.be/3TaRdD3BE5I" > playlist.m3u
+          echo "Got URL:"
+          head -1 playlist.m3u
 
-      - name: Commit and push
-        if: always()
+      - name: Commit playlist.m3u
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add playlist.m3u
-          git commit -m "Update SoundCloud URLs" || exit 0
+          git commit -m "Update song URL" || exit 0
           git push
