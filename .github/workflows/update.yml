@@ -1,7 +1,5 @@
 name: Update SoundCloud Playlist
 on:
-  schedule:
-    - cron: '0 */3 * * *'
   workflow_dispatch:
 
 env:
@@ -12,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -20,14 +17,20 @@ jobs:
       - name: Install yt-dlp
         run: pip install -U yt-dlp
 
-      - name: Download playlist and extract stream URLs
+      - name: Debug - Test playlist
         run: |
-          set +e
-          yt-dlp --ignore-errors --no-warnings -g "https://soundcloud.com/kesterofficial/sets/20-best-christian-devotional" > playlist.m3u
+          echo "yt-dlp version:"
+          yt-dlp --version
+          echo "=== Testing playlist access ==="
+          yt-dlp --verbose --dump-single-json "https://soundcloud.com/kesterofficial/sets/20-best-christian-devotional"
+          echo "=== Trying to get stream URLs ==="
+          yt-dlp -v -g "https://soundcloud.com/kesterofficial/sets/20-best-christian-devotional" > playlist.m3u
+          echo "=== Result ==="
           echo "Total URLs: $(wc -l < playlist.m3u)"
           cat playlist.m3u
 
       - name: Commit and push
+        if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
