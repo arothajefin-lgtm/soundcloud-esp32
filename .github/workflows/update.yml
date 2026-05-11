@@ -22,7 +22,8 @@ jobs:
 
       - name: Download playlist and extract stream URLs
         run: |
-          yt-dlp --ignore-errors --no-warnings -g "https://on.soundcloud.com/Y5VrCTxkMBHezJYLkE" > playlist.m3u
+          set +e
+          yt-dlp --ignore-errors --no-warnings -g "https://soundcloud.com/kesterofficial/sets/20-best-christian-devotional" > playlist.m3u
           echo "Total URLs: $(wc -l < playlist.m3u)"
           cat playlist.m3u
 
